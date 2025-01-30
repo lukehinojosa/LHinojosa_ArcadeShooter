@@ -13,10 +13,10 @@ public class GameScript : MonoBehaviour
     public int _planetLives = 3;
     public int _alienLives = 3;
 
-    private float _xL = -10f;
-    private float _xR = 10f;
-    private float _yT = 7f;
-    private float _yB = -7f;
+    public float _xL;
+    public float _xR;
+    public float _yT;
+    public float _yB;
 
     [SerializeField] TextMeshProUGUI _scoreText;
     [SerializeField] TextMeshProUGUI _loseText;
@@ -25,12 +25,15 @@ public class GameScript : MonoBehaviour
 
     [SerializeField] private Image[] _lifeImages;
     [SerializeField] private Image[] _alienHeadImages;
-    
+
     public AudioSource _audioSource;
+    private Camera _mainCamera;
 
     void Start()
     {
+        _mainCamera = Camera.main;
         _audioSource = GetComponent<AudioSource>();
+        CheckAspectRatio();
     }
 
     void Update()
@@ -46,22 +49,24 @@ public class GameScript : MonoBehaviour
 
     void SpawnAsteroid()
     {
+        CheckAspectRatio();
+
         if (_planetLives > 0 && _alienLives > 0)
         {
             int chance = Random.Range(0, 4);
             switch (chance)
             {
                 case 0: //Spawn at top
-                    Instantiate(_AsteroidPrefab, new Vector3(Random.Range(_xL, _xR), _yT, 0f), Quaternion.identity);
+                    Instantiate(_AsteroidPrefab, new Vector3(Random.Range(_xL, _xR), _yT + 1f, 0f), Quaternion.identity);
                     break;
                 case 1: //Spawn at bottom
-                    Instantiate(_AsteroidPrefab, new Vector3(Random.Range(_xL, _xR), _yB, 0f), Quaternion.identity);
+                    Instantiate(_AsteroidPrefab, new Vector3(Random.Range(_xL, _xR), _yB - 1f, 0f), Quaternion.identity);
                     break;
                 case 2: //Spawn at left
-                    Instantiate(_AsteroidPrefab, new Vector3(_xL, Random.Range(_yB, _yT), 0f), Quaternion.identity);
+                    Instantiate(_AsteroidPrefab, new Vector3(_xL - 1f, Random.Range(_yB, _yT), 0f), Quaternion.identity);
                     break;
                 default: //Spawn at right
-                    Instantiate(_AsteroidPrefab, new Vector3(_xR, Random.Range(_yB, _yT), 0f), Quaternion.identity);
+                    Instantiate(_AsteroidPrefab, new Vector3(_xR + 1f, Random.Range(_yB, _yT), 0f), Quaternion.identity);
                     break;
             }
         }
@@ -69,7 +74,15 @@ public class GameScript : MonoBehaviour
             _loseText.gameObject.SetActive(true);
     }
 
-    public void UpdateScore(float scoreValue)
+    void CheckAspectRatio()
+    {
+        _xL = _mainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0)).x;
+        _xR = _mainCamera.ViewportToWorldPoint(new Vector3(1, 0, 0)).x;
+        _yB = _mainCamera.ViewportToWorldPoint(new Vector3(0, 0, 0)).y;
+        _yT = _mainCamera.ViewportToWorldPoint(new Vector3(0, 1, 0)).y;
+    }
+
+public void UpdateScore(float scoreValue)
     {
         _score += scoreValue;
         _scoreText.text = "SCORE\n" + _score;
