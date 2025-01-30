@@ -14,10 +14,13 @@ public class LauncherController : MonoBehaviour
     private Vector3 _mySpawnOffset;
 
     private GameObject _heavyOther;
+    
+    private GameScript _gameScript;
 
     void Start()
     {
         _heavyOther = GameObject.FindGameObjectWithTag("Planet");
+        _gameScript = FindObjectOfType<GameScript>();
     }
     void Update()
     {
@@ -28,11 +31,16 @@ public class LauncherController : MonoBehaviour
 
     private void Controls()
     {
-        if (currentProjectile == null && Input.GetKeyDown(KeyCode.Space))
+        if (_gameScript._planetLives > 0 && _gameScript._alienLives > 0)
         {
-            currentProjectile = Instantiate(_projectilePrefab, transform.position + _mySpawnOffset, Quaternion.identity);
-            currentProjectile.GetComponent<Rigidbody2D>().AddForce(_forceMultiplier * -transform.up, ForceMode2D.Impulse);
-            Destroy(currentProjectile, _deathTime);
+            if (currentProjectile == null && Input.GetKeyDown(KeyCode.Space))
+            {
+                currentProjectile = Instantiate(_projectilePrefab, transform.position + _mySpawnOffset,
+                    Quaternion.identity);
+                currentProjectile.GetComponent<Rigidbody2D>()
+                    .AddForce(_forceMultiplier * -transform.up, ForceMode2D.Impulse);
+                Destroy(currentProjectile, _deathTime);
+            }
         }
     }
 
