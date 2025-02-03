@@ -14,13 +14,10 @@ public class LauncherController : MonoBehaviour
     private Vector3 _mySpawnOffset;
 
     private GameObject _heavyOther;
-    
-    private GameScript _gameScript;
 
     void Start()
     {
         _heavyOther = GameObject.FindGameObjectWithTag("Planet");
-        _gameScript = FindObjectOfType<GameScript>();
     }
     void Update()
     {
@@ -31,7 +28,7 @@ public class LauncherController : MonoBehaviour
 
     private void Controls()
     {
-        if (_gameScript._planetLives > 0 && _gameScript._alienLives > 0)
+        if (GameScript.PlanetLives > 0 && GameScript.AlienLives > 0)
         {
             if (currentProjectile == null && Input.GetKeyDown(KeyCode.Space))
             {
