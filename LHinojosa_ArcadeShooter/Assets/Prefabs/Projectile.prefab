@@ -164,3 +164,4 @@ MonoBehaviour:
   forceVector: {x: 0, y: 0, z: 0}
   forceMultipler: 2
   doFollowRotation: 0
+  _projectileCollideSound: {fileID: 8300000, guid: 99811fee1cbe65d44bf64ee5c32cbe63, type: 3}

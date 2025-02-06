@@ -2,12 +2,10 @@ using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
 public class HUD : MonoBehaviour
 {
     [SerializeField] TextMeshProUGUI _scoreText;
-    [SerializeField] TextMeshProUGUI _loseText;
     [SerializeField] private Image[] _lifeImages;
     [SerializeField] private Image[] _alienHeadImages;
     [SerializeField] private GameObject _AsteroidPrefab;
@@ -29,37 +27,84 @@ public class HUD : MonoBehaviour
         GameScript.PlanetLivesChanged -= GameScript_PlanetLivesChanged;
         GameScript.AlienLivesChanged -= GameScript_AlienLivesChanged;
     }
+    
+    void Start()
+    {
+        _mainCamera = Camera.main;
+        _audioSource = GetComponent<AudioSource>();
+
+        GameScript_ScoreChanged(GameScript.Score);
+
+        switch (GameScript.PlanetLives)
+        {
+            case 3:
+                GameScript_PlanetLivesChanged(2, true);
+                GameScript_PlanetLivesChanged(1, true);
+                GameScript_PlanetLivesChanged(0, true);
+                break;
+            case 2:
+                GameScript_PlanetLivesChanged(2, false);
+                GameScript_PlanetLivesChanged(1, true);
+                GameScript_PlanetLivesChanged(0, true);
+                break;
+            case 1:
+                GameScript_PlanetLivesChanged(2, false);
+                GameScript_PlanetLivesChanged(1, false);
+                GameScript_PlanetLivesChanged(0, true);
+                break;
+            case 0:
+                GameScript_PlanetLivesChanged(2, false);
+                GameScript_PlanetLivesChanged(1, false);
+                GameScript_PlanetLivesChanged(0, false);
+                break;
+        }
+        
+        switch (GameScript.AlienLives)
+        {
+            case 3:
+                GameScript_AlienLivesChanged(2, true);
+                GameScript_AlienLivesChanged(1, true);
+                GameScript_AlienLivesChanged(0, true);
+                break;
+            case 2:
+                GameScript_AlienLivesChanged(2, false);
+                GameScript_AlienLivesChanged(1, true);
+                GameScript_AlienLivesChanged(0, true);
+                break;
+            case 1:
+                GameScript_AlienLivesChanged(2, false);
+                GameScript_AlienLivesChanged(1, false);
+                GameScript_AlienLivesChanged(0, true);
+                break;
+            case 0:
+                GameScript_AlienLivesChanged(2, false);
+                GameScript_AlienLivesChanged(1, false);
+                GameScript_AlienLivesChanged(0, false);
+                break;
+        }
+        
+        StartCoroutine(Co_SpawnAsteroid());
+    }
 
     private void GameScript_ScoreChanged(int score)
     {
         _scoreText.text = "SCORE\n" + score;
     }
 
-    private void GameScript_PlanetLivesChanged(int lifeValue)
+    private void GameScript_PlanetLivesChanged(int lifeValue, bool isActive)
     {
-        _lifeImages[lifeValue].gameObject.SetActive(false);
-        if (lifeValue == 0)
-            GameScript.SpawnEnemies = false;
-    }
-
-    private void GameScript_AlienLivesChanged(int lifeValue)
-    {
-        _alienHeadImages[lifeValue].gameObject.SetActive(false);
+        _lifeImages[lifeValue].gameObject.SetActive(isActive);
         
-        if (lifeValue == 0)
+        if (!isActive && lifeValue == 0)
             GameScript.SpawnEnemies = false;
     }
-    
-    public void RestartLevel()
-    {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-    }
 
-    void Start()
+    private void GameScript_AlienLivesChanged(int lifeValue, bool isActive)
     {
-        _mainCamera = Camera.main;
-        _audioSource = GetComponent<AudioSource>();
-        StartCoroutine(Co_SpawnAsteroid());
+        _alienHeadImages[lifeValue].gameObject.SetActive(isActive);
+        
+        if (!isActive && lifeValue == 0)
+            GameScript.SpawnEnemies = false;
     }
     
     private IEnumerator Co_SpawnAsteroid()
@@ -96,6 +141,6 @@ public class HUD : MonoBehaviour
             }
         }
 
-        _loseText.gameObject.SetActive(true);
+        StartCoroutine(GameScript.EndScreen());
     }
 }

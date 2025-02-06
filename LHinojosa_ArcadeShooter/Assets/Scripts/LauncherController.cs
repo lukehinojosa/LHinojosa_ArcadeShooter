@@ -14,10 +14,16 @@ public class LauncherController : MonoBehaviour
     private Vector3 _mySpawnOffset;
 
     private GameObject _heavyOther;
+    
+    private HUD _hud;
+    private AudioSource _audioSource;
+    [SerializeField] private AudioClip _shootSound;
 
     void Start()
     {
         _heavyOther = GameObject.FindGameObjectWithTag("Planet");
+        _hud = FindObjectOfType<HUD>();
+        _audioSource = _hud.GetComponent<AudioSource>();
     }
     void Update()
     {
@@ -37,6 +43,10 @@ public class LauncherController : MonoBehaviour
                 currentProjectile.GetComponent<Rigidbody2D>()
                     .AddForce(_forceMultiplier * -transform.up, ForceMode2D.Impulse);
                 Destroy(currentProjectile, _deathTime);
+                
+                _audioSource.volume = 0.1f;
+                _audioSource.pitch = Random.Range(0.5f, 0.75f);
+                _audioSource.PlayOneShot(_shootSound);
             }
         }
     }

@@ -12,6 +12,7 @@ public class ProjectileScript : MonoBehaviour
     [SerializeField] bool doFollowRotation;
     private HUD _hud;
     private AudioSource _audioSource;
+    [SerializeField] private AudioClip _projectileCollideSound;
     void Start()
     {
         _heavyOther = GameObject.FindGameObjectWithTag("Planet");
@@ -58,22 +59,34 @@ public class ProjectileScript : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
+        if (!GameScript.SpawnEnemies)
+            return;
+        
         if (collision.gameObject.CompareTag("Planet"))
         {
-            _audioSource.Play();
+            _audioSource.volume = 1f;
             _audioSource.pitch = Random.Range(0.5f, 1.5f);
+            _audioSource.PlayOneShot(_projectileCollideSound);
             
             Destroy(gameObject);
             GameScript.PlanetLives += -1;
         }
         else if (collision.gameObject.CompareTag("Asteroid"))
         {
+            _audioSource.volume = 1f;
+            _audioSource.pitch = Random.Range(0.5f, 1.5f);
+            _audioSource.PlayOneShot(_projectileCollideSound);
+            
             Destroy(collision.gameObject);
             GameScript.Score += 1;
             Destroy(gameObject);
         }
         else if (collision.gameObject.CompareTag("Player"))
         {
+            _audioSource.volume = 1f;
+            _audioSource.pitch = Random.Range(0.5f, 1.5f);
+            _audioSource.PlayOneShot(_projectileCollideSound);
+            
             Destroy(gameObject);
             GameScript.AlienLives += -1;
             

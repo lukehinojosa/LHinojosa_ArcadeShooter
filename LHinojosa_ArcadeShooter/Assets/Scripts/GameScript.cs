@@ -1,6 +1,8 @@
 using System;
+using System.Collections;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameScript : MonoBehaviour
 {
@@ -34,7 +36,9 @@ public class GameScript : MonoBehaviour
                 return;
             
             _planetLives = value;
-            PlanetLivesChanged?.Invoke(_planetLives);
+            
+            if (value < 3)
+                PlanetLivesChanged?.Invoke(_planetLives, false);
         }
     }
     
@@ -51,7 +55,9 @@ public class GameScript : MonoBehaviour
                 return;
             
             _alienLives = value;
-            AlienLivesChanged?.Invoke(_alienLives);
+            
+            if (value < 3)
+                AlienLivesChanged?.Invoke(_alienLives, false);
         }
     }
 
@@ -64,7 +70,7 @@ public class GameScript : MonoBehaviour
         }
         set
         {
-            if (_cameraCorners.SequenceEqual(value))
+            if (_cameraCorners.SequenceEqual(value)) 
                 return;
 
             _cameraCorners = value;
@@ -85,6 +91,33 @@ public class GameScript : MonoBehaviour
     }
 
     public static event Action<int> ScoreChanged;
-    public static event Action<int> PlanetLivesChanged;
-    public static event Action<int> AlienLivesChanged;
+    public static event Action<int, bool> PlanetLivesChanged;
+    public static event Action<int, bool> AlienLivesChanged;
+    
+    public void RestartLevel()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+    
+    public void StartGame()
+    {
+        Score = 0;
+        PlanetLives = 3;
+        AlienLives = 3;
+        SpawnEnemies = true;
+        
+        SceneManager.LoadScene("MainScene");
+    }
+    
+    public static IEnumerator EndScreen()
+    {
+        yield return new WaitForSeconds(0.5f);
+        SceneManager.LoadScene("EndScreen");
+    }
+    
+    public void MainMenu()
+    {
+        Debug.Log("Test");
+        SceneManager.LoadScene("StartScene");
+    }
 }
