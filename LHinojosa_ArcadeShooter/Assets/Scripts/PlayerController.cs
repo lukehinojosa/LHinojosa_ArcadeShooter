@@ -23,7 +23,7 @@ public class PlayerController : MonoBehaviour
 
     private float _sizeSteps = 0.2f;
     private float _smallSize = 0.01f;
-    private float _sizeTimeMultiplier = 0.1f;
+    private float _sizeTimeMultiplier = 0.00001f;
     
     private HUD _hud;
     private AudioSource _audioSource;
@@ -138,11 +138,12 @@ public class PlayerController : MonoBehaviour
         //Shrink
         while (transform.localScale != Vector3.one * _smallSize)
         {
-            yield return new WaitForSeconds(Time.deltaTime * _sizeTimeMultiplier);
+            yield return new WaitForSeconds(_sizeTimeMultiplier);
             transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one * _smallSize, _sizeSteps);
+            
+            if (transform.localScale.x < 0.1f)
+                _sR.enabled = false;
         }
-        
-        _sR.enabled = false;
         
         //Warp
         transform.position = new Vector3(-transform.position.x, -transform.position.y, 0f);
@@ -154,7 +155,7 @@ public class PlayerController : MonoBehaviour
                 _sR.enabled = true;
             
             transform.localScale = Vector3.Lerp(transform.localScale, Vector3.one, _sizeSteps);
-            yield return new WaitForSeconds(Time.deltaTime * _sizeTimeMultiplier);
+            yield return new WaitForSeconds(_sizeTimeMultiplier);
         }
         
         _canWarp = true;
